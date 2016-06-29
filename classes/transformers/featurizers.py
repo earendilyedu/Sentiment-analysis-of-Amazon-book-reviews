@@ -46,7 +46,7 @@ class MetaFeaturizer(BaseFeaturizer):
 
 class SubjFeaturizer(BaseFeaturizer):
 
-	PATH_TO_LEXICON = '/Users/Louis/Project-Draft/opinion mining/lexicon/subjclueslen1-HLTEMNLP05.tff'
+	PATH_TO_LEXICON = '/Users/Louis/Project-Draft/opinion/lexicon/subjclueslen1-HLTEMNLP05.tff'
 
 	TAG_MAP = {'NN': 'noun',
 			   'NNS': 'noun',
@@ -186,7 +186,7 @@ class LiuFeaturizer(BaseFeaturizer):
     Download lexicon at: http://www.cs.uic.edu/~liub/FBS/opinion-lexicon-English.rar
 	"""
 
-	PATH_TO_LEXICONS = '/Users/Louis/Project-Draft/opinion mining/lexicon'
+	PATH_TO_LEXICONS = '/Users/Louis/Project-Draft/opinion/lexicon'
 	NEG_SUFFIXER = NegationSuffixAdder()
 
 	def __init__(self):

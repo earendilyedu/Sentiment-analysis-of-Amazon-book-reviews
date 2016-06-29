@@ -10,7 +10,9 @@ class Review(object):
 		# each sentence is a string or uni and sparated by comma like: [u'Spiritually and ....', u'A book that .....']
 		nltk_splitter = nltk.data.load('tokenizers/punkt/english.pickle')
 		self.sentences  = nltk_splitter.tokenize(self.review_text)
-      
+		# self.stars = review_dict['overall'].astype(int)
+
+
 
 	def sentence_tokenize(self):
 		"""

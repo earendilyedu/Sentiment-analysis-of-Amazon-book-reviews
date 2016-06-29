@@ -1,0 +1,14 @@
+.ipynb_checkpoints
+*.csv
+*.txt
+*.log
+*.json
+*.parquet
+metastore_db
+*.pyc
+.idea
+.ipynb_checkpoints
+*.bak
+*.swp
+.DS_Store
+

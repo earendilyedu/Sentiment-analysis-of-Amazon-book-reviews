@@ -41,9 +41,9 @@ class Sentence(object):
 
 		if review: #if passed, store a reference to the review this came from
 			self.review = review
-			self.stars = self.review.stars # star pointer to number of stars (for featurization)
+			self.stars = self.review.overall # star pointer to number of stars (for featurization)
 
-		
+
 
 		# compute and store aspects for this sentence
 		self.aspects = self.compute_aspects()
