@@ -7,7 +7,7 @@ This file:
 	- Best OPINION MODEL (opinionated vs. not opinionated)
 	- Best SENTIMENT MODEL (positive vs. negative, assuming opinionated)
 
-In practice, I have been running this using Domino Data Labs, which
+In practice, I have been running this using Domino Data Labs
 
 """
 from sklearn.linear_model import LogisticRegression
@@ -61,7 +61,8 @@ def print_classifier_results(y_true, y_pred, y_proba, name):
 	pl.ylabel('True Positive Rate')
 	pl.title('ROC Curve: ' + name)
 	pl.legend(loc="lower right")
-	pl.savefig("./results/"+name+'.png', format='png')
+	# pl.savefig("./results/"+name+'.png', format='png')
+
 
 def run_opinion_grid_search(full_df):
 	"""
@@ -70,7 +71,7 @@ def run_opinion_grid_search(full_df):
 	name = "Opinion_Model"
 
 	y = full_df.opinionated.astype(int)
-	X = full_df.drop(['sentiment', 'opinionated'], axis=1).values
+	X = full_df.drop(['sentiment', 'opinionated','review_stars'], axis=1).values
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=117)
 
@@ -114,14 +115,14 @@ def run_senti_grid_search(full_df):
 	only_polar = full_df[full_df.sentiment!=0].copy()
 
 	y = only_polar.sentiment.astype(int)
-	X = only_polar.drop(['sentiment', 'opinionated'], axis=1).values
+	X = only_polar.drop(['sentiment', 'opinionated','review_stars'], axis=1).values
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=117)
 
 	print "%s model train size: %d" % (name, len(y_train))
 	print "%s model test size: %d" % (name, len(y_test))
 
-	clf = LogisticRegression(class_weight='auto')
+	clf = LogisticRegression(class_weight='balanced')
 	params = {'C':[0.01, 0.1, 1.0, 10.0], 'penalty': ['l1', 'l2']}
 	# params = {'C': [1.0]}
 
@@ -136,7 +137,7 @@ def run_senti_grid_search(full_df):
 	y_true, y_pred =  y_test, grid_search.best_estimator_.predict(X_test)
 	y_proba = grid_search.best_estimator_.predict_proba(X_test)[:,1]
 
-	print_classifier_results(y_true, y_ pred, y_proba, name)
+	print_classifier_results(y_true, y_pred, y_proba, name)
 
 	return grid_search, grid_search.best_estimator_.fit(X,y)
 
@@ -145,7 +146,7 @@ if __name__ == "__main__":
 
 	print "Reading data..."
 
-	development_df = pd.read_csv("./data/featurized_development.csv") # raw data set
+	development_df = pd.read_csv("/Users/Louis/final-project/data/featurized_train.csv") # raw data set
 
 	print "Size of complete development set: %d" % len(development_df)
 	print "Target class breakdowns:"
@@ -159,5 +160,7 @@ if __name__ == "__main__":
 
 	### STORE THE FINAL MODELS ####
 
-	pickle.dump(opin_best_est, open("./results/final_models/opin_pred.p", 'wb'))
-	pickle.dump(senti_best_est, open("./results/final_models/senti_pred.p", 'wb'))
+	with open('/Users/Louis/final-project/classes/main/models/opin_model.pkl', 'wb') as f:
+		pickle.dump(opin_best_est, f)
+	with open('/Users/Louis/final-project/classes/main/models/senti_model.pkl', 'wb') as f:
+		pickle.dump(senti_best_est, f)

@@ -6,6 +6,7 @@ from operator import itemgetter
 
 from transformers.sentiment import SentimentModel, OpinionModel
 
+
 class Business(object):
 	"""
 	Class to store the full corpus of reviews and meta-data
@@ -17,7 +18,7 @@ class Business(object):
 	SENTIMENT_MODEL = SentimentModel()
 	OPINION_MODEL = OpinionModel()
 
-	def __init__(self, review_df):
+	def __init__(self,review_dict,asin):
 		"""
 		INPUT: pandas DataFrame with each row a review, and columns:
 
@@ -43,17 +44,22 @@ class Business(object):
 		"""
 
 		# Ensure only got data about *one* Business
-		assert len(review_df.business_id.unique()) == 1, "Must pass data for a single business to Business"
+		# assert len(review_df.asin.unique()) == 1, "Must pass data for a single business to Business"
+		#
+		# # Store business-level meta data
+		self.business_id = asin # string
+		# # self.business_name = str(review_df.business_name.iloc[0]) # string
+		# self.overall_stars = int(review_df.overall.iloc[0]) # int
+		# self.categories = review_df.business_categories.iloc[0].split('<CAT>') #list of strings
+		# self.ambiance = review_df.business_ambiance.iloc[0].split('<AMB>') #list of strings
 
-		# Store business-level meta data
-		self.business_id = str(review_df.asin.iloc[0]) # string
-		# self.business_name = str(review_df.business_name.iloc[0]) # string
-		self.overall_stars = int(review_df.business_overall_stars.iloc[0]) # int
-		self.categories = review_d   f.business_categories.iloc[0].split('<CAT>') #list of strings
-		self.ambiance = review_df.business_ambiance.iloc[0].split('<AMB>') #list of strings
+		# # Create the list of Reviews for this Business
+		# self.reviews = [Review(dict(review_row), business=self) for _,review_row in review_df.iterrows()]
 
-		# Create the list of Reviews for this Business
-		self.reviews = [Review(dict(review_row), business=self) for _,review_row in review_df.iterrows()]
+		review = review_dict[asin]['reviewText']
+		star = review_dict[asin]['overall']
+		data = zip(review,star)
+		self.reviews = [Review(review,star).sentence_tokenize() for review,star in data]
 
 	def __iter__(self):
 		"""
@@ -71,7 +77,7 @@ class Business(object):
 
 		Return a string representation of this Business (i.e. the name of the Business)
 		"""
-		return self.business_name
+		return self.asin
 
 	## ANALYSIS METHODS ##
 
@@ -95,8 +101,8 @@ class Business(object):
 		asp_dict = self.filter_asp_dict(asp_dict) # final filtering
 
 		return {'business_id': self.business_id,
-				'business_name': self.business_name,
-				'business_stars': self.overall_stars,
+				# 'business_name': self.business_name,
+				# 'business_stars': self.overall_stars,
 				'aspect_summary': asp_dict
 				}
 
@@ -120,7 +126,7 @@ class Business(object):
 		"""
 
 		# Get all the candidate aspects in each sentence
-		asp_sents = [sent.aspects for rev in self for sent in rev]
+		asp_sents = [sent.aspects for rev in self.reviews for sent in rev]
 		n_sents = float(len(asp_sents))
 
 		single_asps = [] #list of lists (aspects)
@@ -212,7 +218,7 @@ class Business(object):
 		INPUT: Business, string (aspect)
 		OUTPUT: List of Sentence objects
 		"""
-		return [sent for review in self for sent in review if sent.has_aspect(aspect)]
+		return [sent for review in self.reviews for sent in review if sent.has_aspect(aspect)]
 
 	def filter_single_asps(self, single_asps, multi_asps):
 		"""

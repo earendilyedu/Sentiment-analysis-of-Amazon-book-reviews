@@ -26,7 +26,7 @@ class Sentence(object):
 	# Aspect Extractor
 	ASP_EXTRACTOR = SentenceAspectExtractor()
 
-	def __init__(self, raw, review=None):
+	def __init__(self, raw, stars):
 		"""
 		INPUT: string (raw text of sentence), (optional) Review object
 
@@ -39,9 +39,9 @@ class Sentence(object):
 		self.pos_tagged = self.pos_tag(self.tokenized) #list of tuples
 		self.lemmatized = self.lemmatize(self.pos_tagged) #list of tuples
 
-		if review: #if passed, store a reference to the review this came from
-			self.review = review
-			self.stars = self.review.overall # star pointer to number of stars (for featurization)
+		# if review: #if passed, store a reference to the review this came from
+		# 	self.review = review
+		self.stars = stars # star pointer to number of stars (for featurization)
 
 
 
@@ -140,7 +140,7 @@ class Sentence(object):
 		insertion into the database.
 		"""
 		return {'text': self.raw,
-				'user': self.review.user_name
+				# 'user': self.review.user_name
 				}
 
 	def __str__(self):
