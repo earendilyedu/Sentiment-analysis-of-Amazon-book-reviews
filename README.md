@@ -1,6 +1,7 @@
 # Sentiment-analysis-of-Amazon-book-reviews
 
-The goals of this project are
+The goals of this project:
+
 1,   Mining  Users’ opinions  about  books 
  (Positive  or Negative)
 
